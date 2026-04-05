@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from 'react'
 import QuestForm from './components/QuestForm'
 import QuestTable from './components/QuestTable'
 import TypeColorManager from './components/TypeColorManager'
+import api from './api'
 
 const PRESET_TYPES = [
   'Main Quest',
@@ -59,7 +60,7 @@ export default function App() {
   }, [])
 
   async function loadQuests() {
-    const data = await window.api.getQuests()
+    const data = await api.getQuests()
     setQuests(data)
     return data
   }
@@ -99,9 +100,9 @@ export default function App() {
 
   async function handleSubmit(questData, keepOpen = false) {
     if (editingQuest) {
-      await window.api.updateQuest(editingQuest.id, questData)
+      await api.updateQuest(editingQuest.id, questData)
     } else {
-      await window.api.addQuest(questData)
+      await api.addQuest(questData)
     }
     await loadQuests()
     if (!keepOpen) closeForm()
@@ -112,7 +113,7 @@ export default function App() {
     const idx = sameType.findIndex(q => q.id === editingQuest.id)
     const nextId = sameType[idx + direction]?.id
     if (editingQuest) {
-      await window.api.updateQuest(editingQuest.id, questData)
+      await api.updateQuest(editingQuest.id, questData)
     }
     const fresh = await loadQuests()
     if (nextId) {
@@ -122,13 +123,13 @@ export default function App() {
   }
 
   async function handleToggleComplete(quest) {
-    await window.api.updateQuest(quest.id, { ...quest, completed: !quest.completed })
+    await api.updateQuest(quest.id, { ...quest, completed: !quest.completed })
     await loadQuests()
   }
 
   async function handleDelete(id) {
     if (window.confirm('Delete this quest entry?')) {
-      await window.api.deleteQuest(id)
+      await api.deleteQuest(id)
       await loadQuests()
     }
   }
